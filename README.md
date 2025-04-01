@@ -1,9 +1,3 @@
-
-
-# nexaFit 
-
----
-
 # nexaFit 
 
 Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **frontend** components of the nexaFit platform. nexaFit is a comprehensive nutrition and wellness platform that offers calorie prediction, meal planning, and a community forum for user engagement.
