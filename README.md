@@ -1,6 +1,6 @@
-# nexaFit 
+# nexaFit Monorepo
 
-Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **frontend** components of the nexaFit platform. nexaFit is a comprehensive nutrition and wellness platform that offers calorie prediction, meal planning, and a community forum for user engagement.
+Welcome to the **nexaFit Monorepo**, a unified repository for both the backend and frontend components of the nexaFit platform. nexaFit is a comprehensive nutrition and wellness platform that offers calorie prediction, meal planning, community forums, and now an **LLM-powered chatbot assistant** to guide users in utilizing the platform effectively.
 
 ---
 
@@ -19,6 +19,11 @@ Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **fro
     - Features tagging, pagination, and comment tracking for meaningful discussions.
 4. **User Management**
     - Handles user profile creation, updates, and retrieval.
+5. **Chatbot Assistant**
+    - Powered by an LLM (Large Language Model) to assist users in navigating the platform.
+    - Provides guidance on calorie prediction inputs, meal planning options, forum usage, and more.
+
+---
 
 ### Frontend Features
 
@@ -31,7 +36,9 @@ Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **fro
     - Fetches weekly meal plans from the backend.
 4. **Forum**
     - Enables users to participate in discussions, share motivation, and engage with the community.
-5. **Responsive Design**
+5. **Chatbot Integration**
+    - Frontend interface for interacting with the LLM-powered assistant.
+6. **Responsive Design**
     - Optimized for mobile and desktop views.
 
 ---
@@ -44,6 +51,7 @@ Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **fro
 - **Database**: MongoDB Atlas
 - **Machine Learning Model**: XGBoost
 - **Containerization**: Docker
+- **LLM Integration**: OpenAI GPT or similar language model
 
 
 ### Frontend
@@ -64,15 +72,27 @@ Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **fro
 │   ├── .dockerignore         # Files ignored by Docker
 │   ├── .env                  # Environment variables (not included in repo)
 │   ├── .gitignore            # Git ignore rules
-│   ├── calorie_predictor.json # Trained XGBoost model
-│   ├── database.py           # MongoDB configurations and database operations
 │   ├── Dockerfile            # Docker build instructions
-│   ├── forum.py              # Forum feature routes and logic
+│   ├── LICENSE               # License file
 │   ├── main.py               # FastAPI entry point
-│   ├── ml_predictor.py       # Calorie prediction logic (ML integration)
-│   ├── models.py             # Pydantic models for validation and serialization
+│   ├── README.Docker.md      # Docker-specific instructions
+│   ├── README.md             # Backend documentation
+│   ├── render.yaml           # Render deployment blueprint file
 │   ├── requirements.txt      # Python dependencies
-│   └── std_scaler.bin        # Pre-fitted scaler for input normalization
+│   ├── database/             # Database management files
+│   │   └── database.py       # MongoDB database manager
+│   ├── ml/                   # Machine learning-related files
+│   │   ├── calorie_predictor.json  # Trained XGBoost model
+│   │   ├── ml_predictor.py         # Prediction endpoint handler
+│   │   └── std_scaler.bin          # Fitted StandardScaler for normalization
+│   ├── routes/               # API route handlers
+│   │   ├── calorie_prediction.py  # Calorie prediction routes
+│   │   ├── chat_assistant.py       # Chatbot assistant routes
+│   │   ├── forum.py                # Forum routes
+│   │   ├── meal_planning.py        # Meal planning routes
+│   │   └── user_profile.py         # User profile routes
+│   └── validation/           # Validation models using Pydantic
+│       └── models.py         # Pydantic validation models for API requests/responses
 ├── frontend/                 # Frontend directory
 │   ├── public/               # Static assets (e.g., images, favicon)
 │   ├── src/
@@ -97,6 +117,7 @@ Welcome to the **nexaFit Monorepo**, which houses both the **backend** and **fro
 - Docker (optional for containerization)
 - MongoDB Atlas account (for backend database)
 - Spoonacular API key (for meal planning)
+- OpenAI API key or equivalent (for LLM chatbot assistant)
 
 ---
 
@@ -121,7 +142,8 @@ Create a `.env` file in the `backend` directory with the following keys:
 MONGODB_URI=&lt;your_mongodb_uri&gt;
 DATABASE_NAME=&lt;your_database_name&gt;
 SPOONACULAR_API_KEY=&lt;your_spoonacular_api_key&gt;
-CALORIE_MODEL_PATH=calorie_predictor.json
+CALORIE_MODEL_PATH=ml/calorie_predictor.json
+OPENAI_API_KEY=&lt;your_openai_api_key&gt;
 ```
 
 4. Run the application:
@@ -154,6 +176,7 @@ Create a `.env` file in the `frontend` directory with the following keys:
 ```bash
 REACT_APP_API_URL=&lt;your-backend-api-url&gt;
 REACT_APP_CLERK_FRONTEND_API=&lt;your-clerk-frontend-api-key&gt;
+REACT_APP_OPENAI_API_KEY=&lt;your-openai-api-key&gt;
 ```
 
 4. Start the development server:
@@ -196,18 +219,10 @@ docker build -t nexafit-backend .
 3. Run the container:
 
 ```bash
-docker run --env-file .env -p 8000:8000 nexafit-backend
+docker run --env-file .env -p 8000:8000 nexafit-backend 
 ```
 
 4. Access the API at `http://127.0.0.1:8000`.
-
-### Frontend
-
-The frontend can be deployed on Vercel or served locally using any static file server after building:
-
-```bash
-npm run build &amp;&amp; serve -s build 
-```
 
 ---
 
@@ -215,11 +230,11 @@ npm run build &amp;&amp; serve -s build
 
 ### Backend Deployment
 
-The backend can be deployed on any cloud provider or container orchestration platform like AWS ECS or Kubernetes.
+The backend can be deployed on platforms like Render.com using `render.yaml` or any cloud provider supporting Docker containers.
 
 ### Frontend Deployment
 
-The frontend is optimized for deployment on platforms like Vercel or Netlify.
+The frontend is optimized for deployment on Vercel or Netlify.
 
 To deploy on Vercel:
 
@@ -251,16 +266,3 @@ This project is licensed under the MIT License.
 ## Contact
 
 For questions or support, please contact [ezahpizza](https://github.com/ezahpizza).
-
-<div>⁂</div>
-
-[^1]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/51749027/03e7f5fe-c85e-4f38-8509-dfe0c34bb20e/models.py
-
-[^2]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/51749027/d4fa731c-0957-4793-9a1f-75ebdbe082bb/main.py
-
-[^3]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/51749027/34067aeb-9fe0-4571-b923-b4a0b5249393/database.py
-
-[^4]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/51749027/fb50f2d5-0420-45bc-9941-0343fab33f19/forum.py
-
-[^5]: https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/51749027/64510e34-1946-455e-9b13-540ff5d7a78b/ml_predictor.py
-
